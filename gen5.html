@@ -1,0 +1,268 @@
+<!-- CyberDefendX -->
+<!-- Website :-  https://cyberdefendx.org/--> 
+<!-- GitHub :-  https://github.com/cyberdefendx -->
+<!-- YouTube :-  https://www.youtube.com/@CyberDefendX  -->
+<!-- Instagram :-  https://www.instagram.com/cyberdefendx/ -->
+<!-- Facebook :-  https://www.facebook.com/cyberdefendx -->
+<!-- Twitter :-  https://twitter.com/CyberdefendxOrg -->
+<!-- Linkdin :-  https://www.linkedin.com/company/cybredefendx/ -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>File Encryption Builder</title>
+<style>
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+  }
+
+  h3 {
+    text-align: center;
+    color: #333;
+  }
+
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 5px;
+	width: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  table td {
+    padding: 10px;
+  }
+
+  input[type="file"],
+  input[type="password"],
+  input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 100%;
+  }
+
+  button {
+    padding: 10px 20px;
+    background-color: #1abc9c;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #16a085;
+  }
+
+  textarea {
+    width: 100%;
+    height: 200px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    resize: vertical;
+  }
+
+  .generated-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .download-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .download-button:hover {
+    background-color: #2980b9;
+  }
+
+  .progress-bar {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 20px;
+    background-color: #1abc9c;
+    width: 1%; /* Start at 1% */
+    transition: width 0.3s ease-in-out;
+  }
+
+  small {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+  }
+</style>
+<script type="text/javascript">
+var file="";
+var filebase64="";
+
+function build() {
+  var fileobject = document.getElementById("fileid");
+  file=fileobject.files[0];
+
+  var fileReader = new FileReader();
+  fileReader.onload = function(event) {
+    filebase64 = fileReader.result.replace('data:', '').replace(/^.+,/, '');
+    generatehtml();
+  }
+  fileReader.readAsDataURL(file);
+}
+
+function xor(input)
+{
+  var result = "";
+  var password = document.getElementById("passwordid").value;
+  for(i=0; i<input.length; ++i){
+    result += String.fromCharCode(password.charCodeAt(i % password.length) ^ input.charCodeAt(i));
+  }
+  return result;
+}
+
+function generatehtml(){
+  var progressBar = document.getElementById("progressFill");
+  progressBar.style.width = "1%"; // Start at 1%
+  var progress = 1;
+
+  let htmlstring = "<!DOCTYPE html>\n" +
+"<html>\n" +
+"<meta charset='UTF-8'>\n"+
+"<title>" + file.name + "<\/title>\n"+
+"<body align='center' style='font-family: Arial, Helvetica, sans-serif'>\n"+
+"<script>\n"+
+"function b64toarray(base64) {\n"+
+"  var bin_string = window.atob(base64);\n"+
+"  var len = bin_string.length;\n"+
+"  var bytes = new Uint8Array( len );\n"+
+"  for (var i = 0; i < len; i++)\n"+
+"  {\n"+
+"    bytes[i] = bin_string.charCodeAt(i);\n"+
+"  }\n"+
+"  return bytes.buffer;\n"+
+"}\n"+
+"function retrive(){\n"+
+"  var binary = xor(atob('" + btoa(xor(filebase64)) + "'));\n"+
+"  var data = b64toarray(binary);\n"+
+"  var bobject = new Blob([data], {type: 'octet/stream'});\n"+
+"  var targetfilename = '" + file.name + "';\n"+
+"  var hiddenobject = document.createElement(String.fromCharCode(97));\n"+
+"  document.body.appendChild(hiddenobject);\n"+
+"  hiddenobject.style = 'display: none';\n"+
+"  var url = window.URL.createObjectURL(bobject);\n"+
+"  hiddenobject.href = url;\n"+
+"  eval('hiddenobject' + String.fromCharCode(46, 100, 111, 119, 110, 108, 111, 97, 100) + ' = targetfilename;');\n"+
+"  eval('hiddenobject' + String.fromCharCode(46, 99, 108, 105, 99, 107, 40, 41) + ';');\n"+
+"  window.URL.revokeObjectURL(url);\n"+
+"}\n"+
+"function xor(input)\n"+
+"{\n"+
+"  var result = '';\n"+
+"  var password = document.getElementById('passwordid').value;\n"+
+"  for(i=0; i<input.length; ++i){\n"+
+"    result += String.fromCharCode(password.charCodeAt(i % password.length) ^ input.charCodeAt(i));\n"+
+"  }\n"+
+"  return result;\n"+
+"}\n"+
+"<\/script>\n"+
+"<table align=center border=0 style='background: #1abc1f'>\n"+
+"<tr>\n"+
+"  <td>\n"+
+"    File: " + file.name + "\n"+
+"    <br>\n"+
+"    Size: " + file.size.toLocaleString() + " bytes\n"+
+"    <br>\n"+
+"    Message: " + document.getElementById("textid").value + "\n"+
+"    <br>\n"+
+"    <input type=password id=passwordid placeholder=password>\n"+
+"    <br>\n"+
+"    <button onclick=retrive()>Retrieve File<\/button>\n"+
+"  <\/td>\n"+
+"<\/tr>\n"+
+"<\/table>\n"+
+"<br>\n"+
+"<br>\n"+
+"<br>\n"+
+"<small>Generated by <a href=https://cyberdefendx.org/ target=_blank>CyberDefendX<\/a><\/small>\n"+
+"<\/body>\n"+
+"<\/html>\n";
+
+  document.getElementById("generatedHtml").value = htmlstring;
+
+  var progressInterval = setInterval(function() {
+    progress++;
+    progressBar.style.width = progress + "%";
+    if (progress >= 100) {
+      clearInterval(progressInterval);
+    }
+  }, 20); // Adjust the interval as needed
+}
+
+function downloadHtml() {
+  var htmlContent = document.getElementById("generatedHtml").value;
+  var blob = new Blob([htmlContent], { type: "text/html" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "generated_file.html";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
+}
+</script>
+</head>
+<body>
+<h3>File Encryption Builder v1.0</h3>
+<table>
+<tr>
+  <td>Choose file: </td>
+  <td><input type="file" id="fileid"></td>
+</tr>
+<tr>
+  <td>Set open password: </td>
+  <td><input type="password" id="passwordid"></td>
+</tr>
+<tr>
+  <td>Message: </td>
+  <td><input type="text" id="textid" oninput="this.size = this.value.length"></td>
+</tr>
+<tr>
+  <td>&nbsp;</td>
+  <td><button onclick="build()">Build Encryption HTML file</button></td>
+</tr>
+</table>
+
+<div class="progress-bar">
+  <div id="progressFill" class="progress-bar-fill"></div>
+</div>
+
+<div class="generated-section">
+  <h3>Generated HTML:</h3>
+  <textarea id="generatedHtml" readonly></textarea>
+  <button class="download-button" onclick="downloadHtml()">Download HTML</button>
+</div>
+
+<small>Power by <a href="https://cyberdefendx.org/" target="_blank">Cyber Defend X</a></small>
+</body>
+</html>
